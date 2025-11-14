@@ -1,18 +1,97 @@
+# Advanced IPv4 & IPv6 Subnet Calculator
 
-## 🚀 Getting Started
+A powerful, modern, client-side web application for calculating IPv4 and IPv6 subnet details, performing VLSM, converting IP formats, viewing CIDR charts, and accessing calculation history — all built using HTML, CSS, and vanilla JavaScript.
 
-Simply open `index.html` in a modern web browser to start using the calculator.
+This tool runs 100% locally in the browser.  
+No backend, no frameworks, no external libraries.
 
-## ⌨️ Keyboard Shortcuts
+## 🚀 Features
 
-- `Ctrl + Enter`: Execute the current tab's primary action
-- `Tab`: Navigate between form elements
-- `Enter`: Submit forms
+### 🔹 1. IPv4 & IPv6 Subnet Calculator
+- Auto-detects IPv4/IPv6 (or user can select)
+- Calculates:
+  - Network Address
+  - Broadcast Address (IPv4)
+  - Subnet Mask (/prefix)
+  - Wildcard Mask
+  - Usable Host Range
+  - Total Hosts / Addresses
+- IP Type classification:
+  - Private / Public
+  - Loopback
+  - Link-local
+  - Multicast
+  - ULA / Global Unicast (IPv6)
 
-## 🔒 Privacy
+### 🔹 2. VLSM Subnetting (Variable Length Subnet Masking)
+- Enter:
+  - Base Network
+  - Prefix
+  - Department host requirements
+- Automatically generates:
+  - Correct subnet sizes
+  - Network & broadcast addresses
+  - Host ranges
+  - Usable hosts
+- Copy button for each subnet
 
-This application runs entirely in your browser. No data is sent to any server. Your calculation history is stored locally on your device.
+### 🔹 3. IP Conversion Tools
+- Supports IPv4 and IPv6 conversion between:
+  - IP → Decimal
+  - Decimal → IP
+  - IP → Binary
+  - Binary → IP
+  - IP → Hexadecimal
+  - Hexadecimal → IP
+- Includes automatic formatting (grouping, padding, etc.)
 
----
+### 🔹 4. CIDR Reference Charts
+- IPv4 CIDR blocks /8 to /30
+- IPv6 common prefixes /32, /48, /56, /64, /96, /112, /128
+- Hover to view mask & host count
+- Click to auto-fill prefix
 
-*Built for network engineers, students, and IT professionals*
+### 🔹 5. History (LocalStorage)
+- Stores last 10 calculations
+- Click an entry → auto-load values + re-run calculation
+- Clear history option
+
+### 🔹 6. UX Enhancements
+- Modern UI with hover effects
+- Auto-copy buttons
+- Input validation
+- Smooth transitions
+- Keyboard shortcut: `Ctrl + Enter` → Trigger action based on active tab
+
+## 📋 Usage
+
+1. **Subnet Calculator Tab**
+   - Enter an IP address and prefix length
+   - View detailed subnet information
+
+2. **VLSM Calculator Tab**
+   - Enter base network and prefix
+   - Add departments with host requirements
+   - Generate optimized subnet allocation
+
+3. **IP Converter Tab**
+   - Select conversion type
+   - Enter value to convert
+   - View formatted result
+
+4. **CIDR Charts Tab**
+   - Browse common CIDR notations
+   - Click to use in calculations
+
+5. **History Tab**
+   - View recent calculations
+   - Click to reload previous entries
+
+## 🛠️ Technical Details
+
+- **Pure Client-Side**: All calculations performed in browser
+- **No Dependencies**: Built with vanilla JavaScript
+- **Persistent Storage**: Uses localStorage for history
+- **Responsive Design**: Works on desktop and mobile devices
+
+## 📁 File Structure
