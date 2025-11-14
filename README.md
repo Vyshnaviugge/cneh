@@ -1,5 +1,4 @@
 Advanced IPv4 & IPv6 Subnet Calculator
-
 A powerful, modern, client-side web application for calculating IPv4 and IPv6 subnet details, performing VLSM, converting IP formats, viewing CIDR charts, and accessing calculation history — all built using HTML, CSS, and vanilla JavaScript.
 
 This tool runs 100% locally in the browser.
@@ -7,7 +6,6 @@ No backend, no frameworks, no external libraries.
 
 🚀 Features
 🔹 1. IPv4 & IPv6 Subnet Calculator
-
 Auto-detects IPv4/IPv6 (or user can select)
 
 Calculates:
@@ -37,7 +35,6 @@ Multicast
 ULA / Global Unicast (IPv6)
 
 🔹 2. VLSM Subnetting (Variable Length Subnet Masking)
-
 Enter:
 
 Base Network
@@ -59,7 +56,6 @@ Usable hosts
 Copy button for each subnet
 
 🔹 3. IP Conversion Tools
-
 Supports IPv4 and IPv6 conversion between:
 
 IP → Decimal
@@ -77,7 +73,6 @@ Hexadecimal → IP
 Includes automatic formatting (grouping, padding, etc.)
 
 🔹 4. CIDR Reference Charts
-
 IPv4 CIDR blocks /8 to /30
 
 IPv6 common prefixes /32, /48, /56, /64, /96, /112, /128
@@ -87,7 +82,6 @@ Hover to view mask & host count
 Click to auto-fill prefix
 
 🔹 5. History (LocalStorage)
-
 Stores last 10 calculations
 
 Click an entry → auto-load values + re-run calculation
@@ -95,7 +89,6 @@ Click an entry → auto-load values + re-run calculation
 Clear history option
 
 🔹 6. UX Enhancements
-
 Modern UI with hover effects
 
 Auto-copy buttons
@@ -104,6 +97,48 @@ Input validation
 
 Smooth transitions
 
-Keyboard shortcut
+Keyboard shortcut: Ctrl + Enter → Trigger action based on active tab
 
-Ctrl + Enter → Trigger action based on active tab
+📋 Usage
+Subnet Calculator Tab
+
+Enter an IP address and prefix length
+
+View detailed subnet information
+
+VLSM Calculator Tab
+
+Enter base network and prefix
+
+Add departments with host requirements
+
+Generate optimized subnet allocation
+
+IP Converter Tab
+
+Select conversion type
+
+Enter value to convert
+
+View formatted result
+
+CIDR Charts Tab
+
+Browse common CIDR notations
+
+Click to use in calculations
+
+History Tab
+
+View recent calculations
+
+Click to reload previous entries
+
+🛠️ Technical Details
+Pure Client-Side: All calculations performed in browser
+
+No Dependencies: Built with vanilla JavaScript
+
+Persistent Storage: Uses localStorage for history
+
+Responsive Design: Works on desktop and mobile devices
