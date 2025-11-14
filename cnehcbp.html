@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced IPv4 & IPv6 Subnet Calculator</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #0b1220;
+            --bg-tertiary: #071024;
+            --bg-card: #05102a;
+            --text-primary: #e6eef8;
+            --text-secondary: #9fb0d8;
+            --text-muted: #8aa1d6;
+            --accent-primary: #0b61ff;
+            --accent-secondary: #223344;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+            margin: 0;
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+            margin: 0;
+        }
+        
+        .card {
+            max-width: 1200px;
+            width: 100%;
+            background: linear-gradient(180deg, var(--bg-secondary), var(--bg-tertiary));
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+            border: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin: 0 0 16px;
+            background: linear-gradient(90deg, #e6eef8, #9fb0d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .tab.active {
+            background: rgba(11, 97, 255, 0.1);
+            color: var(--accent-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            background: #071333;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(11, 97, 255, 0.2);
+        }
+        
+        input.error, select.error {
+            border-color: var(--error-color);
+        }
+        
+        .col {
+            flex: 1;
+            min-width: 220px;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        button:hover {
+            background: #0a56e0;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: var(--accent-secondary);
+        }
+        
+        button.secondary:hover {
+            background: #2a4455;
+        }
+        
+        .status-message {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-message::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        pre {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 8px;
+            overflow: auto;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            margin-top: 8px;
+        }
+        
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .card-mini {
+            background: linear-gradient(180deg, #031126, #04102a);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .card-mini:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .small {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .muted {
+            color: var(--text-muted);
+        }
+        
+        .copy {
+            margin-left: 8px;
+            padding: 6px 10px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #cfe1ff;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .copy:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .copy.copied {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .error-message::before {
+            content: "⚠";
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .subnet-list {
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        
+        .subnet-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .subnet-item:last-child {
+            border-bottom: none;
+        }
+        
+        .subnet-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .subnet-address {
+            font-weight: 600;
+        }
+        
+        .subnet-range {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .conversion-result {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .cidr-chart {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .cidr-item {
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cidr-item:hover {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .row {
+                gap: 12px;
+            }
+            
+            .col {
+                min-width: 100%;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .status-message {
+                margin-left: 0;
+                justify-content: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Advanced IPv4 & IPv6 Subnet Calculator</h1>
+        <div class="description">Calculate network information, convert between formats, subnet networks, and more. All processing happens locally in your browser.</div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="calculator">Subnet Calculator</button>
+            <button class="tab" data-tab="subnetting">VLSM Subnetting</button>
+            <button class="tab" data-tab="conversion">IP Conversion</button>
+            <button class="tab" data-tab="cidr-chart">CIDR Chart</button>
+            <button class="tab" data-tab="history">History</button>
+        </div>
+        
+        <!-- Subnet Calculator Tab -->
+        <div class="tab-content active" id="calculator">
+            <div class="row">
+                <div class="col">
+                    <label for="ipInput">IP Address (IPv4 or IPv6)</label>
+                    <input id="ipInput" placeholder="e.g. 192.168.1.10 or 2001:db8::1" />
+                    <div id="ipError" class="error-message" style="display: none">Please enter a valid IP address</div>
+                </div>
+                <div class="col">
+                    <label for="prefixInput">Network (/prefix) or Mask</label>
+                    <input id="prefixInput" placeholder="e.g. /24 or 255.255.255.0 or /64" />
+                    <div id="prefixError" class="error-message" style="display: none">Please enter a valid prefix or mask</div>
+                </div>
+                <div class="col" style="min-width: 140px">
+                    <label for="modeSelect">Mode</label>
+                    <select id="modeSelect">
+                        <option value="auto">Auto-detect</option>
+                        <option value="v4">IPv4</option>
+                        <option value="v6">IPv6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="calcBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                    </svg>
+                    Calculate
+                </button>
+                <button id="clearBtn" class="secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                    </svg>
+                    Clear
+                </button>
+                <div class="status-message">Single-file, client-side. No data leaves your browser.</div>
+            </div>
+
+            <div id="results" style="margin-top: 20px; display: none" class="fade-in">
+                <div class="output-grid" id="outGrid"></div>
+                <div style="margin-top: 20px">
+                    <label>Raw output</label>
+                    <pre id="rawOutput"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VLSM Subnetting Tab -->
+        <div class="tab-content" id="subnetting">
+            <div class="row">
+                <div class="col">
+                    <label for="networkInput">Network Address</label>
+                    <input id="networkInput" placeholder="e.g. 192.168.0.0" />
+                </div>
+                <div class="col">
+                    <label for="prefixInputSubnet">Prefix Length</label>
+                    <input id="prefixInputSubnet" placeholder="e.g. /24" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="subnetRequirements">Subnet Requirements (one per line: name,hosts)</label>
+                    <textarea id="subnetRequirements" rows="5" placeholder="e.g.&#10;Sales,50&#10;IT,30&#10;HR,10"></textarea>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="subnetBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="currentColor"/>
+                        <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H17V17H7V15Z" fill="currentColor"/>
+                    </svg>
+                    Calculate Subnets
+                </button>
+            </div>
+            <div id="subnetResults" style="display: none">
+                <h3>Subnet Allocation</h3>
+                <div class="subnet-list" id="subnetList"></div>
+            </div>
+        </div>
+        
+        <!-- IP Conversion Tab -->
+        <div class="tab-content" id="conversion">
+            <div class="row">
+                <div class="col">
+                    <label for="conversionInput">IP Address to Convert</label>
+                    <input id="conversionInput" placeholder="e.g. 192.168.1.1 or 3232235777" />
+                </div>
+                <div class="col">
+                    <label for="conversionType">Conversion Type</label>
+                    <select id="conversionType">
+                        <option value="ip-to-decimal">IP to Decimal</option>
+                        <option value="decimal-to-ip">Decimal to IP</option>
+                        <option value="ip-to-binary">IP to Binary</option>
+                        <option value="binary-to-ip">Binary to IP</option>
+                        <option value="ip-to-hex">IP to Hexadecimal</option>
+                        <option value="hex-to-ip">Hexadecimal to IP</option>
+                    </select>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="convertBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 17H4V15H20V17ZM20 10H4V8H20V10ZM4 22H20V20H4V22ZM7 4V6H17V4H7ZM4 6H2V20C2 21.1 2.9 22 4 22H20C21.1 22 22 21.1 22 20V6H4Z" fill="currentColor"/>
+                    </svg>
+                    Convert
+                </button>
+            </div>
+            <div id="conversionResult" class="conversion-result" style="display: none"></div>
+        </div>
+        
+        <!-- CIDR Chart Tab -->
+        <div class="tab-content" id="cidr-chart">
+            <h3>IPv4 CIDR Reference Chart</h3>
+            <div class="cidr-chart" id="cidrChart"></div>
+            
+            <h3 style="margin-top: 24px;">IPv6 Common Prefix Lengths</h3>
+            <div class="cidr-chart" id="ipv6Chart"></div>
+        </div>
+        
+        <!-- History Tab -->
+        <div class="tab-content" id="history">
+            <h3>Calculation History</h3>
+            <div class="controls">
+                <button id="clearHistoryBtn" class="secondary">Clear History</button>
+            </div>
+            <div id="historyList" class="subnet-list"></div>
+        </div>
+
+        <footer>
+            <strong>Tips:</strong> For IPv4 you can enter mask or /prefix. For IPv6 use compressed or full notation (e.g. 2001:db8::1 /64).
+            IPv4 examples: 192.168.1.1/24, 10.0.0.1 255.255.255.0. IPv6 examples: 2001:db8::1/64, fe80::1/10.
+        </footer>
+    </div>
+
+    <script>
+        // Original helper functions from your code
+        function ipv4ToInt(ip){
+            const parts = ip.trim().split('.');
+            if(parts.length!==4) throw 'Invalid IPv4';
+            return parts.reduce((acc,p)=>{const v=Number(p); if(isNaN(v)||v<0||v>255) throw 'Invalid IPv4'; return (acc<<8) + v},0) >>> 0;
+        }
+        
+        function intToIpv4(i){ return [(i>>>24)&255, (i>>>16)&255, (i>>>8)&255, i&255].join('.') }
+        
+        function maskToPrefix(mask){ 
+            if(mask.includes('.')){ 
+                const binary = mask.split('.').map(x=>parseInt(x,10)).map(b=>b.toString(2).padStart(8,'0')).join('');
+                const prefix = binary.indexOf('0');
+                return prefix === -1 ? 32 : prefix;
+            } 
+            if(mask.startsWith('/')) return Number(mask.slice(1)); 
+            return Number(mask); 
+        }
+
+        // IPv6 helpers using BigInt
+        function expandIPv6(addr){
+            if(!addr.includes(':')) throw 'Invalid IPv6';
+            if(addr.includes('::')){
+                const parts = addr.split('::');
+                const left = parts[0]?parts[0].split(':'):[];
+                const right = parts[1]?parts[1].split(':'):[];
+                const missing = 8 - (left.length + right.length);
+                const fill = new Array(missing).fill('0');
+                const groups = [...left, ...fill, ...right];
+                return groups.map(g=>g?g.padStart(4,'0'):'0000').join(':');
+            } else {
+                return addr.split(':').map(g=>g.padStart(4,'0')).join(':');
+            }
+        }
+        
+        function ipv6ToBigInt(addr){
+            const expanded = expandIPv6(addr);
+            const parts = expanded.split(':');
+            let acc = 0n;
+            for(const p of parts){ acc = (acc << 16n) + BigInt(parseInt(p,16)); }
+            return acc;
+        }
+        
+        function bigIntToIPv6(b){
+            const parts = [];
+            for(let i=0;i<8;i++){ const shift = BigInt(16*(7-i)); const part = Number((b >> shift) & 0xffffn); parts.push(part.toString(16).padStart(4,'0')); }
+            const joined = parts.join(':');
+            return joined.replace(/(^|:)0{1,4}(:0{1,4}){1,}/, '::').replace(/(^|:)0{1,4}/g, (s)=>s.replace(/^:/,''));
+        }
+        
+        function prefixToMaskIPv4(p){ return p===32?0xFFFFFFFF: (p===0?0: (~((1<< (32-p)) -1))>>>0); }
+
+        // Core calculation functions
+        function calculateIPv4(ipStr, prefixStr){
+            const ip = ipv4ToInt(ipStr);
+            const prefix = maskToPrefix(prefixStr);
+            if(prefix<0||prefix>32) throw 'Invalid IPv4 prefix';
+            const mask = prefixToMaskIPv4(prefix);
+            const network = ip & mask;
+            const broadcast = network | (~mask >>>0);
+            const totalHosts = prefix===32?1: (prefix===31?2: (2**(32-prefix) - 2));
+            const firstHost = prefix>=31? network : network +1;
+            const lastHost = prefix>=31? broadcast : broadcast -1;
+            
+            // Calculate wildcard mask
+            const wildcard = (~mask) >>> 0;
+            
+            return {
+                ip: intToIpv4(ip), 
+                prefix, 
+                mask: intToIpv4(mask), 
+                wildcard: intToIpv4(wildcard),
+                network:intToIpv4(network), 
+                broadcast:intToIpv4(broadcast), 
+                firstHost:intToIpv4(firstHost), 
+                lastHost:intToIpv4(lastHost), 
+                totalHosts: totalHosts<0?0: totalHosts,
+                ipType: getIPv4Type(ipStr)
+            }
+        }
+
+        function calculateIPv6(ipStr, prefixStr){
+            const prefix = prefixStr.trim().startsWith('/')? Number(prefixStr.trim().slice(1)) : Number(prefixStr);
+            if(isNaN(prefix) || prefix<0 || prefix>128) throw 'Invalid IPv6 prefix';
+            const ipBig = ipv6ToBigInt(ipStr);
+            const hostBits = 128 - prefix;
+            const networkBig = (ipBig >> BigInt(hostBits)) << BigInt(hostBits);
+            const count = 1n << BigInt(hostBits);
+            const lastBig = networkBig + count - 1n;
+            
+            return {
+                ip: ipStr,
+                prefix,
+                network: bigIntToIPv6(networkBig),
+                first: bigIntToIPv6(networkBig),
+                last: bigIntToIPv6(lastBig),
+                numAddresses: count.toString(),
+                ipType: getIPv6Type(ipStr)
+            }
+        }
+        
+        // New feature: IP type classification
+        function getIPv4Type(ip) {
+            const ipInt = ipv4ToInt(ip);
+            
+            // Private ranges
+            if ((ipInt >= ipv4ToInt('10.0.0.0') && ipInt <= ipv4ToInt('10.255.255.255')) ||
+                (ipInt >= ipv4ToInt('172.16.0.0') && ipInt <= ipv4ToInt('172.31.255.255')) ||
+                (ipInt >= ipv4ToInt('192.168.0.0') && ipInt <= ipv4ToInt('192.168.255.255'))) {
+                return 'Private';
+            }
+            
+            // Localhost
+            if (ipInt >= ipv4ToInt('127.0.0.0') && ipInt <= ipv4ToInt('127.255.255.255')) {
+                return 'Loopback';
+            }
+            
+            // Link-local
+            if (ipInt >= ipv4ToInt('169.254.0.0') && ipInt <= ipv4ToInt('169.254.255.255')) {
+                return 'Link-local';
+            }
+            
+            // Multicast
+            if (ipInt >= ipv4ToInt('224.0.0.0') && ipInt <= ipv4ToInt('239.255.255.255')) {
+                return 'Multicast';
+            }
+            
+            return 'Public';
+        }
+        
+        function getIPv6Type(ip) {
+            const ipBig = ipv6ToBigInt(ip);
+            
+            // Unique Local Address (ULA) - fc00::/7
+            if ((ipBig >> 121n) === 0xfdn || (ipBig >> 121n) === 0xfen) {
+                return 'Unique Local (ULA)';
+            }
+            
+            // Link-local - fe80::/10
+            if ((ipBig >> 118n) === 0xfe8n) {
+                return 'Link-local';
+            }
+            
+            // Multicast - ff00::/8
+            if ((ipBig >> 120n) === 0xffn) {
+                return 'Multicast';
+            }
+            
+            // Loopback
+            if (ipBig === 1n) {
+                return 'Loopback';
+            }
+            
+            // Documentation - 2001:db8::/32
+            if ((ipBig >> 96n) === 0x20010db8n) {
+                return 'Documentation';
+            }
+            
+            return 'Global Unicast';
+        }
+        
+        // New feature: VLSM Subnetting
+        function calculateVLSM(network, prefix, requirements) {
+            const networkInt = ipv4ToInt(network);
+            const basePrefix = maskToPrefix(prefix);
+            const subnetMask = prefixToMaskIPv4(basePrefix);
+            
+            // Sort requirements by host count (descending)
+            const sortedReqs = requirements
+                .map(req => {
+                    const [name, hosts] = req.split(',');
+                    return {
+                        name: name.trim(),
+                        hosts: parseInt(hosts.trim()),
+                        prefix: 32 - Math.ceil(Math.log2(parseInt(hosts.trim()) + 2))
+                    };
+                })
+                .sort((a, b) => b.hosts - a.hosts);
+            
+            let currentNetwork = networkInt;
+            const results = [];
+            
+            for (const req of sortedReqs) {
+                const subnetSize = Math.pow(2, 32 - req.prefix);
+                
+                // Check if we have enough space
+                if ((currentNetwork - networkInt) + subnetSize > Math.pow(2, 32 - basePrefix)) {
+                    throw `Not enough address space for subnet: ${req.name}`;
+                }
+                
+                const subnetMask = prefixToMaskIPv4(req.prefix);
+                const subnetNetwork = currentNetwork;
+                const subnetBroadcast = subnetNetwork | (~subnetMask >>> 0);
+                const firstHost = req.prefix >= 31 ? subnetNetwork : subnetNetwork + 1;
+                const lastHost = req.prefix >= 31 ? subnetBroadcast : subnetBroadcast - 1;
+                const usableHosts = req.prefix === 32 ? 1 : (req.prefix === 31 ? 2 : (2 ** (32 - req.prefix) - 2));
+                
+                results.push({
+                    name: req.name,
+                    network: intToIpv4(subnetNetwork),
+                    prefix: req.prefix,
+                    mask: intToIpv4(subnetMask),
+                    firstHost: intToIpv4(firstHost),
+                    lastHost: intToIpv4(lastHost),
+                    broadcast: intToIpv4(subnetBroadcast),
+                    usableHosts,
+                    requiredHosts: req.hosts
+                });
+                
+                currentNetwork += subnetSize;
+            }
+            
+            return results;
+        }
+        
+        // New feature: IP Conversion
+        function convertIP(value, type) {
+            try {
+                switch(type) {
+                    case 'ip-to-decimal':
+                        if (value.includes(':')) {
+                            // IPv6
+                            const bigInt = ipv6ToBigInt(value);
+                            return bigInt.toString();
+                        } else {
+                            // IPv4
+                            return ipv4ToInt(value).toString();
+                        }
+                    
+                    case 'decimal-to-ip':
+                        if (value.includes(':')) {
+                            // IPv6 (decimal string to IPv6)
+                            const bigInt = BigInt(value);
+                            return bigIntToIPv6(bigInt);
+                        } else {
+                            // IPv4
+                            const intValue = parseInt(value);
+                            if (intValue < 0 || intValue > 4294967295) throw 'Invalid decimal value for IPv4';
+                            return intToIpv4(intValue);
+                        }
+                    
+                    case 'ip-to-binary':
+                        if (value.includes(':')) {
+                            // IPv6
+                            const bigInt = ipv6ToBigInt(value);
+                            return bigInt.toString(2).padStart(128, '0').replace(/(.{8})/g, '$1 ').trim();
+                        } else {
+                            // IPv4
+                            const intValue = ipv4ToInt(value);
+                            return intValue.toString(2).padStart(32, '0').replace(/(.{8})/g, '$1 ').trim();
+                        }
+                    
+                    case 'binary-to-ip':
+                        const binary = value.replace(/\s/g, '');
+                        if (binary.length === 32) {
+                            // IPv4
+                            const intValue = parseInt(binary, 2);
+                            return intToIpv4(intValue);
+                        } else if (binary.length === 128) {
+                            // IPv6
+                            const bigInt = BigInt('0b' + binary);
+                            return bigIntToIPv6(bigInt);
+                        } else {
+                            throw 'Invalid binary length';
+                        }
+                    
+                    case 'ip-to-hex':
+                        if (value.includes(':')) {
+                            // IPv6
+                            const bigInt = ipv6ToBigInt(value);
+                            return '0x' + bigInt.toString(16);
+                        } else {
+                            // IPv4
+                            const intValue = ipv4ToInt(value);
+                            return '0x' + intValue.toString(16).toUpperCase();
+                        }
+                    
+                    case 'hex-to-ip':
+                        const hex = value.replace(/^0x/, '');
+                        if (hex.length <= 8) {
+                            // IPv4
+                            const intValue = parseInt(hex, 16);
+                            return intToIpv4(intValue);
+                        } else {
+                            // IPv6
+                            const bigInt = BigInt('0x' + hex);
+                            return bigIntToIPv6(bigInt);
+                        }
+                    
+                    default:
+                        throw 'Unknown conversion type';
+                }
+            } catch (e) {
+                throw `Conversion error: ${e}`;
+            }
+        }
+        
+        // New feature: CIDR Chart
+        function generateCIDRChart() {
+            const cidrChart = document.getElementById('cidrChart');
+            cidrChart.innerHTML = '';
+            
+            for (let i = 8; i <= 30; i++) {
+                const item = document.createElement('div');
+                item.className = 'cidr-item';
+                item.textContent = `/${i}`;
+                item.title = `Subnet mask: ${intToIpv4(prefixToMaskIPv4(i))}, Hosts: ${i === 31 ? 2 : (i === 32 ? 1 : (2 ** (32 - i) - 2))}`;
+                item.addEventListener('click', () => {
+                    prefixInput.value = `/${i}`;
+                    document.querySelector('.tab.active').click();
+                    document.querySelector('[data-tab="calculator"]').click();
+                });
+                cidrChart.appendChild(item);
+            }
+            
+            const ipv6Chart = document.getElementById('ipv6Chart');
+            ipv6Chart.innerHTML = '';
+            
+            const ipv6Prefixes = [32, 48, 56, 64, 96, 112, 128];
+            ipv6Prefixes.forEach(prefix => {
+                const item = document.createElement('div');
+                item.className = 'cidr-item';
+                item.textContent = `/${prefix}`;
+                item.title = `Number of addresses: ${2n ** BigInt(128 - prefix)}`;
+                item.addEventListener('click', () => {
+                    prefixInput.value = `/${prefix}`;
+                    document.querySelector('.tab.active').click();
+                    document.querySelector('[data-tab="calculator"]').click();
+                });
+                ipv6Chart.appendChild(item);
+            });
+        }
+        
+        // History functionality
+        function saveToHistory(ip, prefix, type, result) {
+            let history = JSON.parse(localStorage.getItem('ipCalculatorHistory') || '[]');
+            
+            history.unshift({
+                ip,
+                prefix,
+                type,
+                result,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 10 entries
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            localStorage.setItem('ipCalculatorHistory', JSON.stringify(history));
+            updateHistoryDisplay();
+        }
+        
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('ipCalculatorHistory') || '[]');
+            
+            historyList.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="subnet-item">No history yet</div>';
+                return;
+            }
+            
+            history.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div><strong>${item.ip} ${item.prefix}</strong> (${item.type})</div>
+                    <div class="small">${new Date(item.timestamp).toLocaleString()}</div>
+                `;
+                
+                historyItem.addEventListener('click', () => {
+                    ipInput.value = item.ip;
+                    prefixInput.value = item.prefix;
+                    modeSelect.value = item.type === 'IPv4' ? 'v4' : 'v6';
+                    document.querySelector('.tab.active').click();
+                    document.querySelector('[data-tab="calculator"]').click();
+                    calcBtn.click();
+                });
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // UI wiring and event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const calcBtn = document.getElementById('calcBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const ipInput = document.getElementById('ipInput');
+            const prefixInput = document.getElementById('prefixInput');
+            const modeSelect = document.getElementById('modeSelect');
+            const results = document.getElementById('results');
+            const outGrid = document.getElementById('outGrid');
+            const rawOutput = document.getElementById('rawOutput');
+            const ipError = document.getElementById('ipError');
+            const prefixError = document.getElementById('prefixError');
+            
+            const subnetBtn = document.getElementById('subnetBtn');
+            const convertBtn = document.getElementById('convertBtn');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            
+            // Tab functionality
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Deactivate all tabs and contents
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Activate current tab and content
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab).classList.add('active');
+                    
+                    // Special initialization for certain tabs
+                    if (this.dataset.tab === 'cidr-chart') {
+                        generateCIDRChart();
+                    } else if (this.dataset.tab === 'history') {
+                        updateHistoryDisplay();
+                    }
+                });
+            });
+            
+            // Original calculation functionality
+            function detectIPType(ip){ 
+                if(ip.includes(':')) return 'v6'; 
+                if(ip.split('.').length===4) return 'v4'; 
+                return 'unknown'; 
+            }
+
+            function showError(element, message) {
+                element.style.display = 'block';
+                element.textContent = message;
+                element.previousElementSibling.classList.add('error');
+            }
+
+            function hideError(element) {
+                element.style.display = 'none';
+                element.previousElementSibling.classList.remove('error');
+            }
+
+            function validateInputs() {
+                let isValid = true;
+                
+                const ip = ipInput.value.trim();
+                if (!ip) {
+                    showError(ipError, 'IP address is required');
+                    isValid = false;
+                } else {
+                    hideError(ipError);
+                }
+                
+                const prefix = prefixInput.value.trim();
+                if (!prefix) {
+                    showError(prefixError, 'Prefix or mask is required');
+                    isValid = false;
+                } else {
+                    hideError(prefixError);
+                }
+                
+                return isValid;
+            }
+
+            calcBtn.addEventListener('click', ()=>{
+                outGrid.innerHTML=''; 
+                rawOutput.textContent=''; 
+                results.style.display='none';
+                
+                if (!validateInputs()) return;
+                
+                const ip = ipInput.value.trim(); 
+                const prefix = prefixInput.value.trim(); 
+                const mode = modeSelect.value;
+                
+                try {
+                    // Add loading state
+                    calcBtn.classList.add('loading');
+                    calcBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 18V22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.24 16.24L19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 19.07L7.76 16.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.24 7.76L19.07 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Calculating...';
+                    
+                    // Small delay to show loading state
+                    setTimeout(() => {
+                        const type = mode==='auto'? detectIPType(ip) : mode;
+                        if(type==='v4'){
+                            const r = calculateIPv4(ip, prefix||'/24');
+                            results.style.display='block';
+                            addCard('IP Address', r.ip);
+                            addCard('IP Type', r.ipType);
+                            addCard('Prefix Length', '/'+r.prefix);
+                            addCard('Subnet Mask', r.mask);
+                            addCard('Wildcard Mask', r.wildcard);
+                            addCard('Network Address', r.network);
+                            addCard('Broadcast Address', r.broadcast);
+                            addCard('First Usable Host', r.firstHost);
+                            addCard('Last Usable Host', r.lastHost);
+                            addCard('Usable Hosts', String(r.totalHosts));
+                            rawOutput.textContent = JSON.stringify(r, null, 2);
+                            
+                            // Save to history
+                            saveToHistory(ip, prefix, 'IPv4', r);
+                        } else if(type==='v6'){
+                            const p = prefix||'/64';
+                            const r = calculateIPv6(ip, p);
+                            results.style.display='block';
+                            addCard('IP Address', r.ip);
+                            addCard('IP Type', r.ipType);
+                            addCard('Prefix Length', '/'+r.prefix);
+                            addCard('Network Address', r.network);
+                            addCard('First Address', r.first);
+                            addCard('Last Address', r.last);
+                            addCard('Total Addresses', r.numAddresses);
+                            rawOutput.textContent = JSON.stringify(r, null, 2);
+                            
+                            // Save to history
+                            saveToHistory(ip, prefix, 'IPv6', r);
+                        } else {
+                            alert('Could not detect IP type. Choose mode or enter a valid IPv4/IPv6 address.');
+                        }
+                        
+                        // Remove loading state
+                        calcBtn.classList.remove('loading');
+                        calcBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg> Calculate';
+                    }, 300);
+                } catch(e) { 
+                    alert('Error: '+e); 
+                    // Remove loading state
+                    calcBtn.classList.remove('loading');
+                    calcBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg> Calculate';
+                }
+            });
+
+            clearBtn.addEventListener('click', ()=>{ 
+                ipInput.value=''; 
+                prefixInput.value=''; 
+                outGrid.innerHTML=''; 
+                rawOutput.textContent=''; 
+                results.style.display='none'; 
+                hideError(ipError);
+                hideError(prefixError);
+            })
+
+            function addCard(title, value){
+                const el = document.createElement('div'); 
+                el.className='card-mini fade-in';
+                el.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div class="small">${title}</div>
+                            <div style="font-weight:600;margin-top:6px;word-break:break-all">${value}</div>
+                        </div>
+                        <button class="copy" title="Copy">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>`;
+                
+                const copyBtn = el.querySelector('.copy');
+                copyBtn.addEventListener('click', ()=>{ 
+                    navigator.clipboard?.writeText(value).then(()=>{
+                        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg>';
+                        copyBtn.classList.add('copied');
+                        setTimeout(()=>{
+                            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"/></svg>';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    }, ()=>{
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = value;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg>';
+                        copyBtn.classList.add('copied');
+                        setTimeout(()=>{
+                            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"/></svg>';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    }) 
+                });
+                outGrid.appendChild(el);
+            }
+
+            // New feature: VLSM Subnetting
+            subnetBtn.addEventListener('click', function() {
+                const network = document.getElementById('networkInput').value.trim();
+                const prefix = document.getElementById('prefixInputSubnet').value.trim();
+                const requirementsText = document.getElementById('subnetRequirements').value.trim();
+                
+                if (!network || !prefix || !requirementsText) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                try {
+                    const requirements = requirementsText.split('\n').filter(line => line.trim() !== '');
+                    const results = calculateVLSM(network, prefix, requirements);
+                    
+                    const subnetList = document.getElementById('subnetList');
+                    subnetList.innerHTML = '';
+                    
+                    results.forEach(subnet => {
+                        const item = document.createElement('div');
+                        item.className = 'subnet-item';
+                        item.innerHTML = `
+                            <div class="subnet-info">
+                                <div class="subnet-address">${subnet.name}: ${subnet.network}/${subnet.prefix}</div>
+                                <div class="subnet-range">Range: ${subnet.firstHost} - ${subnet.lastHost}</div>
+                                <div class="small">Hosts: ${subnet.usableHosts} (required: ${subnet.requiredHosts})</div>
+                            </div>
+                            <div>
+                                <button class="copy" data-value="${subnet.network}/${subnet.prefix}">Copy</button>
+                            </div>
+                        `;
+                        
+                        subnetList.appendChild(item);
+                    });
+                    
+                    document.getElementById('subnetResults').style.display = 'block';
+                    
+                    // Add copy functionality to subnet items
+                    document.querySelectorAll('#subnetList .copy').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const value = this.getAttribute('data-value');
+                            navigator.clipboard?.writeText(value).then(() => {
+                                this.textContent = 'Copied!';
+                                setTimeout(() => {
+                                    this.textContent = 'Copy';
+                                }, 2000);
+                            });
+                        });
+                    });
+                    
+                } catch (e) {
+                    alert('Error: ' + e);
+                }
+            });
+            
+            // New feature: IP Conversion
+            convertBtn.addEventListener('click', function() {
+                const input = document.getElementById('conversionInput').value.trim();
+                const type = document.getElementById('conversionType').value;
+                const resultElement = document.getElementById('conversionResult');
+                
+                if (!input) {
+                    alert('Please enter a value to convert');
+                    return;
+                }
+                
+                try {
+                    const result = convertIP(input, type);
+                    resultElement.textContent = result;
+                    resultElement.style.display = 'block';
+                    
+                    // Add copy button
+                    if (!resultElement.querySelector('.copy')) {
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'copy';
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.style.marginTop = '10px';
+                        copyBtn.addEventListener('click', function() {
+                            navigator.clipboard?.writeText(result).then(() => {
+                                this.textContent = 'Copied!';
+                                setTimeout(() => {
+                                    this.textContent = 'Copy';
+                                }, 2000);
+                            });
+                        });
+                        resultElement.appendChild(copyBtn);
+                    }
+                } catch (e) {
+                    resultElement.textContent = 'Error: ' + e;
+                    resultElement.style.display = 'block';
+                }
+            });
+            
+            // New feature: Clear History
+            clearHistoryBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear the history?')) {
+                    localStorage.removeItem('ipCalculatorHistory');
+                    updateHistoryDisplay();
+                }
+            });
+            
+            // Add example IPs on click for easier testing
+            ipInput.addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = 'Try: 192.168.1.1 or 2001:db8::1';
+                }
+            });
+
+            prefixInput.addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = 'Try: /24 or 255.255.255.0 or /64';
+                }
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    const activeTab = document.querySelector('.tab-content.active').id;
+                    
+                    if (activeTab === 'calculator') {
+                        calcBtn.click();
+                    } else if (activeTab === 'subnetting') {
+                        subnetBtn.click();
+                    } else if (activeTab === 'conversion') {
+                        convertBtn.click();
+                    }
+                }
+            });
+            
+            // Initialize CIDR chart and history on page load
+            generateCIDRChart();
+            updateHistoryDisplay();
+        });
+    </script>
+</body>
+</html>
